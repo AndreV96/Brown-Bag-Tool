@@ -178,34 +178,49 @@
   .section-heading:first-of-type {
     margin-top: 0;
   }
-  .past-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  .section-subtitle {
+    margin: -6px 0 14px;
+    font-size: 13px;
+    color: var(--text-muted);
   }
-  .past-card {
+  .past-panel {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 18px 20px;
+    overflow: hidden;
+  }
+  .past-row {
     display: flex;
     justify-content: space-between;
-    gap: 16px;
+    align-items: center;
+    gap: 20px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
   }
-  .resource-badges {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 6px;
+  .past-row:last-child {
+    border-bottom: none;
   }
-  .resource-badge {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text-muted);
+  .past-row-main {
+    min-width: 0;
+  }
+  .past-row-title {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .past-row-meta {
     font-size: 12px;
-    padding: 3px 10px;
-    border-radius: 999px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .past-row-resources {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: right;
     white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .past-row-resources .none {
+    font-style: italic;
   }
   .future-section {
     margin-top: 48px;
@@ -325,7 +340,8 @@
     <h2>Past Presentations</h2>
     <span class="badge-preview">Preview</span>
   </div>
-  <div class="past-list" id="pastList"></div>
+  <p class="section-subtitle">Browse recordings, transcripts, and resources shared from previous Brown Bags.</p>
+  <div class="past-panel" id="pastList"></div>
 
   <div class="future-section">
     <h2>Coming Soon</h2>
@@ -444,32 +460,30 @@
     }
 
     past.forEach(s => {
-      const { day, month } = formatDateParts(s.date);
-      const badges = [];
-      if (s.recordingUrl) badges.push('<span class="resource-badge">🎥 Recording</span>');
-      if (s.transcriptUrl) badges.push('<span class="resource-badge">📝 Transcript</span>');
-      if (s.resources && s.resources.length) {
-        badges.push(`<span class="resource-badge">📎 ${s.resources.length} resource${s.resources.length > 1 ? "s" : ""}</span>`);
-      }
+      const { full } = formatDateParts(s.date);
+      const shortDate = new Date(s.date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
-      const card = document.createElement("div");
-      card.className = "past-card";
-      card.innerHTML = `
-        <div class="session-main">
-          <div class="session-title">${s.title}</div>
-          <div class="presenter-block">
-            <strong>${s.presenter}</strong> — <span class="bg">${s.background}</span>
-          </div>
-          <div class="resource-badges">
-            ${badges.join("") || '<span class="resource-badge">No resources shared</span>'}
-          </div>
+      const parts = [];
+      if (s.recordingUrl) parts.push("🎥 Recording");
+      if (s.transcriptUrl) parts.push("📝 Transcript");
+      if (s.resources && s.resources.length) {
+        parts.push(`📎 ${s.resources.length} resource${s.resources.length > 1 ? "s" : ""}`);
+      }
+      const resourcesText = parts.length
+        ? parts.join("  ·  ")
+        : '<span class="none">No resources shared</span>';
+
+      const row = document.createElement("div");
+      row.className = "past-row";
+      row.title = full;
+      row.innerHTML = `
+        <div class="past-row-main">
+          <div class="past-row-title">${s.title}</div>
+          <div class="past-row-meta">${s.presenter} · ${shortDate}</div>
         </div>
-        <div class="date-block">
-          <div class="date-day">${day}</div>
-          <div class="date-month">${month}</div>
-        </div>
+        <div class="past-row-resources">${resourcesText}</div>
       `;
-      list.appendChild(card);
+      list.appendChild(row);
     });
   }
 
