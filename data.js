@@ -12,7 +12,45 @@ window.SESSIONS = [
     presenter: "Alex Chen",
     background: "Senior Engineer, has worked on search infra for 6 years",
     returning: true,
-    description: "A hands-on look at how retrieval-augmented generation works in real products. We'll cover chunking strategies, embedding choices, and the trade-offs between latency and answer quality, with examples pulled from systems we run today."
+    description: "A hands-on look at how retrieval-augmented generation works in real products. We'll cover chunking strategies, embedding choices, and the trade-offs between latency and answer quality, with examples pulled from systems we run today.",
+    recordingUrl: "#",
+    transcriptUrl: "#",
+    resources: [
+      { label: "Slide deck", url: "#" },
+      { label: "Sample notebook", url: "#" }
+    ]
+  },
+  {
+    id: "effective-code-reviews",
+    title: "Effective Code Reviews",
+    date: "2026-06-10",
+    time: "12:00 PM – 1:00 PM",
+    location: "Room 4B / Zoom",
+    topic: "Developer Experience",
+    presenter: "Jordan Blake",
+    background: "Engineering Manager, has led review culture initiatives",
+    returning: true,
+    description: "What separates a review that catches real problems from one that just nitpicks style. Jordan shares a practical framework for reviewing pull requests, giving feedback that lands, and keeping review turnaround fast without lowering the bar.",
+    recordingUrl: "#",
+    transcriptUrl: "#",
+    resources: [
+      { label: "Review checklist", url: "#" }
+    ]
+  },
+  {
+    id: "intro-to-kubernetes",
+    title: "Intro to Kubernetes for Beginners",
+    date: "2026-07-01",
+    time: "12:00 PM – 1:00 PM",
+    location: "Room 2A / Zoom",
+    topic: "Infrastructure",
+    presenter: "Elena Vasquez",
+    background: "Platform Engineer, first Brown Bag talk",
+    returning: false,
+    description: "A gentle introduction to Kubernetes concepts — pods, deployments, and services — for engineers who've only worked with simpler deploy setups. Elena builds up from first principles with live examples rather than jargon.",
+    recordingUrl: "#",
+    transcriptUrl: null,
+    resources: []
   },
   {
     id: "designing-for-accessibility",

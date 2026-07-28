@@ -165,6 +165,48 @@
     padding: 40px 0;
     font-size: 14px;
   }
+  .section-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 40px 0 12px;
+  }
+  .section-heading h2 {
+    font-size: 18px;
+    margin: 0;
+  }
+  .section-heading:first-of-type {
+    margin-top: 0;
+  }
+  .past-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .past-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .resource-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  .resource-badge {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
   .future-section {
     margin-top: 48px;
   }
@@ -274,7 +316,16 @@
     </div>
   </div>
 
+  <div class="section-heading">
+    <h2>Upcoming Sessions</h2>
+  </div>
   <div class="session-list" id="sessionList"></div>
+
+  <div class="section-heading">
+    <h2>Past Presentations</h2>
+    <span class="badge-preview">Preview</span>
+  </div>
+  <div class="past-list" id="pastList"></div>
 
   <div class="future-section">
     <h2>Coming Soon</h2>
@@ -284,12 +335,8 @@
         Presenters will be able to propose and book a slot directly, instead of going through a manual request.
       </div>
       <div class="future-item">
-        <strong>Past presentations</strong>
-        Browse a history of previous sessions with full details on each one.
-      </div>
-      <div class="future-item">
-        <strong>Linked resources</strong>
-        Decks, repos, and recordings for each past session, linked out to their existing Confluence page.
+        <strong>Past presentation detail pages</strong>
+        Click into a past Brown Bag to watch the recording, read the transcript, and grab shared resources in one place.
       </div>
     </div>
   </div>
@@ -338,12 +385,19 @@
     };
   }
 
+  function startOfToday() {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
   function renderSessions() {
     const list = document.getElementById("sessionList");
     list.innerHTML = "";
 
+    const today = startOfToday();
     const filtered = sessions
-      .slice()
+      .filter(s => new Date(s.date + "T00:00:00") >= today)
       .sort((a, b) => new Date(a.date) - new Date(b.date));
 
     if (filtered.length === 0) {
@@ -375,6 +429,50 @@
     });
   }
 
+  function renderPastSessions() {
+    const list = document.getElementById("pastList");
+    list.innerHTML = "";
+
+    const today = startOfToday();
+    const past = sessions
+      .filter(s => new Date(s.date + "T00:00:00") < today)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    if (past.length === 0) {
+      list.innerHTML = '<div class="empty-state">No past presentations yet.</div>';
+      return;
+    }
+
+    past.forEach(s => {
+      const { day, month } = formatDateParts(s.date);
+      const badges = [];
+      if (s.recordingUrl) badges.push('<span class="resource-badge">🎥 Recording</span>');
+      if (s.transcriptUrl) badges.push('<span class="resource-badge">📝 Transcript</span>');
+      if (s.resources && s.resources.length) {
+        badges.push(`<span class="resource-badge">📎 ${s.resources.length} resource${s.resources.length > 1 ? "s" : ""}</span>`);
+      }
+
+      const card = document.createElement("div");
+      card.className = "past-card";
+      card.innerHTML = `
+        <div class="session-main">
+          <div class="session-title">${s.title}</div>
+          <div class="presenter-block">
+            <strong>${s.presenter}</strong> — <span class="bg">${s.background}</span>
+          </div>
+          <div class="resource-badges">
+            ${badges.join("") || '<span class="resource-badge">No resources shared</span>'}
+          </div>
+        </div>
+        <div class="date-block">
+          <div class="date-day">${day}</div>
+          <div class="date-month">${month}</div>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  }
+
   document.getElementById("openModalBtn").onclick = () => {
     document.getElementById("modalOverlay").classList.add("open");
   };
@@ -387,6 +485,7 @@
   };
 
   renderSessions();
+  renderPastSessions();
 </script>
 
 </body>
