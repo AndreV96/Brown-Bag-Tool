@@ -196,9 +196,16 @@
     gap: 20px;
     padding: 14px 20px;
     border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: background 0.15s ease;
   }
   .past-row:last-child {
     border-bottom: none;
+  }
+  .past-row:hover {
+    background: var(--accent-soft);
   }
   .past-row-main {
     min-width: 0;
@@ -350,10 +357,6 @@
         <strong>Schedule from the app</strong>
         Presenters will be able to propose and book a slot directly, instead of going through a manual request.
       </div>
-      <div class="future-item">
-        <strong>Past presentation detail pages</strong>
-        Click into a past Brown Bag to watch the recording, read the transcript, and grab shared resources in one place.
-      </div>
     </div>
   </div>
 </main>
@@ -473,8 +476,9 @@
         ? parts.join("  ·  ")
         : '<span class="none">No resources shared</span>';
 
-      const row = document.createElement("div");
+      const row = document.createElement("a");
       row.className = "past-row";
+      row.href = `session.html?id=${encodeURIComponent(s.id)}`;
       row.title = full;
       row.innerHTML = `
         <div class="past-row-main">

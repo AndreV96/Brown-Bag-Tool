@@ -142,6 +142,30 @@
     padding: 60px 20px;
   }
 
+  .resource-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 0 24px;
+  }
+  .resource-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .resource-link:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #1c1a17;
@@ -199,6 +223,24 @@
       ? '<span class="badge badge-returning">Returning presenter</span>'
       : '<span class="badge badge-first">First time presenting</span>';
 
+    const resourceLinks = [];
+    if (session.recordingUrl) {
+      resourceLinks.push('<a class="resource-link" href="#" data-preview-link>🎥 Watch the recording</a>');
+    }
+    if (session.transcriptUrl) {
+      resourceLinks.push('<a class="resource-link" href="#" data-preview-link>📝 Read the transcript</a>');
+    }
+    (session.resources || []).forEach(r => {
+      resourceLinks.push(`<a class="resource-link" href="#" data-preview-link>📎 ${r.label}</a>`);
+    });
+
+    const resourcesSection = resourceLinks.length ? `
+      <div style="margin-top: 24px;">
+        <p class="section-label">Recording &amp; Resources</p>
+        <div class="resource-list">${resourceLinks.join("")}</div>
+      </div>
+    ` : "";
+
     content.innerHTML = `
       <div class="detail-card">
         <div class="detail-header">
@@ -239,8 +281,16 @@
           </div>
         </div>
         ${badge}
+        ${resourcesSection}
       </div>
     `;
+
+    content.querySelectorAll("[data-preview-link]").forEach(link => {
+      link.onclick = (e) => {
+        e.preventDefault();
+        alert("This is a preview — no actual file is attached yet.");
+      };
+    });
   }
 
   render();
