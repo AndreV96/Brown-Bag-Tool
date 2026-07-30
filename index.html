@@ -121,28 +121,6 @@
     margin: 0 auto;
     padding: 0 24px 60px;
   }
-  .toolbar {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    justify-content: flex-end;
-    margin: 24px 0 16px;
-    flex-wrap: wrap;
-  }
-  .btn-primary {
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    padding: 9px 18px;
-    border-radius: 8px;
-    font-size: 14px;
-    cursor: pointer;
-  }
-  .schedule-wrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
   .badge-preview {
     background: var(--accent-soft);
     color: var(--accent);
@@ -154,16 +132,68 @@
     border-radius: 999px;
     white-space: nowrap;
   }
-  .preview-note {
-    background: var(--accent-soft);
-    color: var(--accent);
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-size: 13px;
-    line-height: 1.4;
-    margin-bottom: 4px;
+  .toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin: 24px 0 16px;
   }
-  .preview-note strong { display: block; margin-bottom: 2px; }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 24px;
+    width: 100%;
+    max-width: 460px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h3 { margin-top: 0; }
+  .modal p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  .modal-steps {
+    margin: 0 0 16px;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .modal-steps code {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 13px;
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
   .session-list {
     display: flex;
     flex-direction: column;
@@ -308,85 +338,6 @@
   .past-row-resources .none {
     font-style: italic;
   }
-  .future-section {
-    margin-top: 48px;
-  }
-  .future-section h2 {
-    font-size: 18px;
-    margin-bottom: 12px;
-  }
-  .future-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 12px;
-  }
-  .future-item {
-    background: var(--surface);
-    border: 1px dashed var(--border);
-    border-radius: 10px;
-    padding: 14px 16px;
-    font-size: 13px;
-    color: var(--text-muted);
-  }
-  .future-item strong {
-    display: block;
-    color: var(--text);
-    font-size: 14px;
-    margin-bottom: 4px;
-  }
-
-  /* Modal */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.35);
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: var(--surface);
-    border-radius: 12px;
-    padding: 24px;
-    width: 100%;
-    max-width: 440px;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-  .modal h3 { margin-top: 0; }
-  .modal label {
-    display: block;
-    font-size: 13px;
-    color: var(--text-muted);
-    margin: 12px 0 4px;
-  }
-  .modal input, .modal select, .modal textarea {
-    width: 100%;
-    padding: 8px 10px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    font-size: 14px;
-    font-family: inherit;
-  }
-  .modal textarea { resize: vertical; min-height: 60px; }
-  .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-  }
-  .btn-secondary {
-    background: none;
-    border: 1px solid var(--border);
-    padding: 9px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    cursor: pointer;
-    color: var(--text);
-  }
-
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #1c1a17;
@@ -425,10 +376,7 @@
 
     <main>
   <div class="toolbar">
-    <div class="schedule-wrap">
-      <span class="badge-preview">Preview</span>
-      <button class="btn-primary" id="openModalBtn">+ Schedule Presentation</button>
-    </div>
+    <button class="btn-primary" id="openModalBtn">+ Schedule Presentation</button>
   </div>
 
   <div class="section-heading">
@@ -442,16 +390,6 @@
   </div>
   <p class="section-subtitle">Browse recordings, transcripts, and resources shared from previous Brown Bags.</p>
   <div class="past-panel" id="pastList"></div>
-
-  <div class="future-section">
-    <h2>Coming Soon</h2>
-    <div class="future-list">
-      <div class="future-item">
-        <strong>Schedule from the app</strong>
-        Presenters will be able to propose and book a slot directly, instead of going through a manual request.
-      </div>
-    </div>
-  </div>
     </main>
   </div>
 </div>
@@ -459,30 +397,15 @@
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <h3>Schedule a Presentation</h3>
-    <div class="preview-note">
-      <strong>Preview — not live yet</strong>
-      This is a mockup of an upcoming feature. Nothing you enter here will be saved.
-    </div>
-    <label>Title</label>
-    <input type="text" id="fTitle" placeholder="e.g. Intro to Vector Databases">
-
-    <label>Date</label>
-    <input type="date" id="fDate">
-
-    <label>Presenter</label>
-    <input type="text" id="fPresenter" placeholder="e.g. Jamie Rivera">
-
-    <label>Presenter background</label>
-    <textarea id="fBackground" placeholder="Short bio or role"></textarea>
-
-    <label style="display:flex; align-items:center; gap:8px; margin-top:14px;">
-      <input type="checkbox" id="fReturning" style="width:auto;">
-      Presenter has done a previous Brown Bag
-    </label>
-
+    <p>Scheduling, rescheduling, and canceling Brown Bag sessions happens in Slack now — not here. Here's how:</p>
+    <ol class="modal-steps">
+      <li>In Slack, run <code>/brownbag schedule</code>.</li>
+      <li>Fill in the title and description, and pick a date from the list of currently open slots.</li>
+      <li>Submit — you're on the calendar right away, with no risk of double-booking.</li>
+    </ol>
+    <p>To reschedule or cancel your own session, run <code>/brownbag manage</code> and select it. To see upcoming and past sessions from Slack, run <code>/brownbag list</code>.</p>
     <div class="modal-actions">
-      <button class="btn-secondary" id="cancelModalBtn">Close</button>
-      <button class="btn-primary" id="saveSessionBtn" title="Not available in this preview">Save (coming soon)</button>
+      <button class="btn-primary" id="closeModalBtn">Got it</button>
     </div>
   </div>
 </div>
@@ -586,22 +509,18 @@
     });
   }
 
-  document.getElementById("openModalBtn").onclick = () => {
-    document.getElementById("modalOverlay").classList.add("open");
-  };
-  document.getElementById("cancelModalBtn").onclick = () => {
-    document.getElementById("modalOverlay").classList.remove("open");
-  };
-  document.getElementById("saveSessionBtn").onclick = () => {
-    // Preview only — scheduling isn't implemented yet, so nothing is persisted.
-    alert("Scheduling from the app isn't available yet — this is just a preview of the feature.");
-  };
-
   document.querySelectorAll("[data-placeholder-nav]").forEach(btn => {
     btn.onclick = () => {
       alert("This section isn't available yet — it's just a placeholder in the mockup.");
     };
   });
+
+  document.getElementById("openModalBtn").onclick = () => {
+    document.getElementById("modalOverlay").classList.add("open");
+  };
+  document.getElementById("closeModalBtn").onclick = () => {
+    document.getElementById("modalOverlay").classList.remove("open");
+  };
 
   renderSessions();
   renderPastSessions();
