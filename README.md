@@ -66,6 +66,27 @@ Architecture notes:
 - No Slack API costs expected at this scale — messaging, slash commands, interactivity, and scheduled messages are free on Slack's platform. Cost would only come from backend hosting and, if freeform Q&A is added, LLM API usage.
 - Requires workspace admin approval to install, since this targets the company Slack workspace.
 
+## API
+
+### Final Product
+- A Python (FastAPI) backend exposing a REST API for Brown Bag sessions:
+  - `GET /presentations` — list all
+  - `GET /presentations/{id}` — get one
+  - `POST /presentations` — create
+  - `PATCH /presentations/{id}` — edit
+  - `DELETE /presentations/{id}` — delete
+- Backed by a persistent database (to be decided — e.g. Postgres/SQLite).
+- This is the single backend shared by all clients: the web app (browsing/reference), the Slack integration (Bolt for Python — scheduling, rescheduling, cancellation, Q&A), and direct admin access for managing past presentations without going through Slack.
+- Write actions (create/edit/delete) require authorization. For Slack-driven requests, the requester's Slack user ID (verified via Slack's signing secret) is checked against roles in a users table (member/admin). For direct admin access to the API, a separate admin authentication mechanism is used.
+- Admins can create/edit/delete any presentation, including adding past presentations retroactively; presenters can only manage their own via Slack.
+
+### POC
+- A minimal FastAPI app implementing the 5 CRUD endpoints above.
+- Uses in-memory storage (a Python list/dict) instead of a real database — data resets on restart, this is intentional for the POC stage.
+- No Slack integration wired up yet — the POC only proves out the API surface itself.
+- Write endpoints are gated behind a simple placeholder admin check (e.g. a hardcoded header/token), not a full auth system.
+- Testable via FastAPI's built-in interactive docs (Swagger UI at `/docs`) or a tool like curl/Postman — no separate UI needed for this stage.
+
 ## Prototype
 
 An early HTML prototype lives in this repo — `index.html`, `session.html`, and `docs.html` — sharing session data via `data.js`. Open `index.html` in a browser to get started.
