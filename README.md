@@ -1,6 +1,6 @@
-# Brown Bags Tracker
+# Brown Bag Tool
 
-A tool used for Brown Bag sessions to keep track of upcoming brown bag presentations, browse past ones, and learn how the format works.
+A tool for organizing Brown Bag sessions — informal lunch-time presentations where someone shares something they know. It's made up of a web app (**Brown Bags Tracker**) for browsing and reference, a Slack integration for scheduling and management, and a shared API backend.
 
 ## Tech Stack
 
@@ -11,49 +11,62 @@ Decisions made so far for the final product (the current prototype in this repo 
 - **Slack integration** — Bolt for Python
 - **Database** — PostgreSQL
 
-## Main Features
+## Web App — Brown Bags Tracker
 
-### Upcoming Sessions
+The browsing/reference experience: view upcoming sessions, browse past ones, and read documentation about the Brown Bag format. Scheduling and management happen in Slack (see below), not here.
+
+### Main Features
+
+#### Upcoming Sessions
 Shows what's coming up so people know what to attend next.
 - Title, date, presenter, and presenter background for each session
 - A badge indicating whether the presenter is returning or presenting for the first time
 - Sessions sorted chronologically, filtered to today and later
 
-### Past Presentations
+#### Past Presentations
 A browsable archive of previous Brown Bags, styled as a compact list distinct from Upcoming Sessions since it serves a different purpose (reference vs. what's next).
 - Title, presenter, and date for each past session
 - At-a-glance indicators for what's available: recording, transcript, and number of shared resources
 
-### Documentation
+#### Documentation
 Explains what a Brown Bag is and how to run one.
 - "What is a Brown Bag?" overview
 - Format & characteristics: duration, format, frequency, audience, and recording policy
 - Step-by-step guidance on how to prepare a session
 
-## Pages
+### Pages
 
-### Dashboard (`index.html`)
+#### Dashboard (`index.html`)
 The landing page.
 - Upcoming Sessions list
 - Past Presentations list
 
-### Session Detail Page (`session.html`)
+#### Session Detail Page (`session.html`)
 A full page for a single session, shared by both upcoming and past sessions, reached by clicking a session on the Dashboard.
 - Topic, date, time, and location
 - Full session description
 - Presenter name, background, and returning/first-time badge
 - For past sessions with recordings, transcripts, or resources: a "Recording & Resources" section linking to each
 
-### Documentation Page (`docs.html`)
+#### Documentation Page (`docs.html`)
 - "What is a Brown Bag?" overview
 - Format & Characteristics grid
 - How to Prepare step-by-step list
 
-## Navigation
+### Navigation
 
 Every page shares the same left sidebar.
 - Dashboard and Documentation are live links
 - Upcoming Sessions, Past Presentations, My Presentations, and Settings are placeholders reserved for future dedicated pages
+
+### Prototype
+
+An early HTML prototype lives in this repo — `index.html`, `session.html`, and `docs.html` — sharing session data via `data.js`. Open `index.html` in a browser to get started.
+
+### Future Features
+
+- Dedicated pages for Upcoming Sessions, Past Presentations, My Presentations, and Settings
+- Link real recording, transcript, and resource files to their actual storage location (e.g. Confluence), replacing the current preview links
 
 ## Slack Integration (Planned)
 
@@ -95,12 +108,3 @@ Architecture notes:
 - No Slack integration wired up yet — the POC only proves out the API surface itself.
 - Write endpoints are gated behind a simple placeholder admin check (e.g. a hardcoded header/token), not a full auth system.
 - Testable via FastAPI's built-in interactive docs (Swagger UI at `/docs`) or a tool like curl/Postman — no separate UI needed for this stage.
-
-## Prototype
-
-An early HTML prototype lives in this repo — `index.html`, `session.html`, and `docs.html` — sharing session data via `data.js`. Open `index.html` in a browser to get started.
-
-## Future Features
-
-- Dedicated pages for Upcoming Sessions, Past Presentations, My Presentations, and Settings
-- Link real recording, transcript, and resource files to their actual storage location (e.g. Confluence), replacing the current preview links
