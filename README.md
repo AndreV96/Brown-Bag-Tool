@@ -2,6 +2,15 @@
 
 A tool used for Brown Bag sessions to keep track of upcoming brown bag presentations, browse past ones, and learn how the format works.
 
+## Tech Stack
+
+Decisions made so far for the final product (the current prototype in this repo is plain HTML/CSS/JS — see [Prototype](#prototype)). This list grows as more stack decisions are made.
+
+- **Frontend** — TypeScript + React
+- **Backend** — Python (FastAPI)
+- **Slack integration** — Bolt for Python
+- **Database** — PostgreSQL
+
 ## Main Features
 
 ### Upcoming Sessions
@@ -75,7 +84,7 @@ Architecture notes:
   - `POST /presentations` — create
   - `PATCH /presentations/{id}` — edit
   - `DELETE /presentations/{id}` — delete
-- Backed by a persistent database (to be decided — e.g. Postgres/SQLite).
+- Backed by a PostgreSQL database.
 - This is the single backend shared by all clients: the web app (browsing/reference), the Slack integration (Bolt for Python — scheduling, rescheduling, cancellation, Q&A), and direct admin access for managing past presentations without going through Slack.
 - Write actions (create/edit/delete) require authorization. For Slack-driven requests, the requester's Slack user ID (verified via Slack's signing secret) is checked against roles in a users table (member/admin). For direct admin access to the API, a separate admin authentication mechanism is used.
 - Admins can create/edit/delete any presentation, including adding past presentations retroactively; presenters can only manage their own via Slack.
