@@ -108,3 +108,30 @@ Architecture notes:
 - No Slack integration wired up yet — the POC only proves out the API surface itself.
 - Write endpoints are gated behind a simple placeholder admin check (e.g. a hardcoded header/token), not a full auth system.
 - Testable via FastAPI's built-in interactive docs (Swagger UI at `/docs`) or a tool like curl/Postman — no separate UI needed for this stage.
+
+## Confluence Integration
+
+Past presentation resources (recordings, decks, transcripts) live on Confluence, under child pages of a "Recordings" parent page. This section covers how that content gets into our DB, and what happens when it can't.
+
+### Data Sync
+- **Drawn from Confluence** — the list of past Brown Bag pages (child pages of "Recordings"), each page's title (parsed into session number + title), its attachments (recording, deck, transcript — filename, type, upload date, download URL), and freeform resource links pasted in the page body (best-effort extraction, less reliable than attachments).
+- **Stored only in our DB** — internal id, date, presenter background, topic category, returning-presenter flag, status (upcoming/past/canceled), Slack user IDs, and member/admin roles. Upcoming sessions live only here until a Confluence page exists.
+- **Stored only in Confluence** — the actual file bytes (recording, deck, transcript) and Confluence's native page content/comments/history. Files are never duplicated into our own storage — our DB only ever holds a pointer/link to them.
+- **Duplicated/cached in our DB** — page title, resource link pointers (URL, filename, type — not the file itself), and the Confluence page ID/URL as a back-reference, so the dashboard/detail pages don't need a live Confluence call on every request. Only the sync job writes these cached fields, to avoid drift.
+
+### Local Upload Job
+A triggerable script automating what's currently done manually (creating a Confluence page per session and dragging in files):
+- Walks a parent local folder containing one subfolder per Brown Bag (recording, deck, transcript already inside each subfolder).
+- For each subfolder, creates a new child page under "Recordings", titled from the folder name.
+- Uploads every file in that subfolder via Confluence's attachment API.
+- Skips folders that already have a corresponding Confluence page, so re-running it after adding new sessions doesn't create duplicates.
+
+### Sync Trigger
+- A Confluence webhook is registered for page and attachment created/updated/removed events.
+- The handler checks whether the changed page is a descendant of "Recordings"; if so, it re-syncs just that page's data (not a full re-sync).
+- Since webhook delivery isn't guaranteed, a periodic full sync job (e.g. nightly) runs as a fallback safety net in case an event is missed.
+
+### Fallback Strategy ("Plan B")
+If part of the integration can't be reliably automated, that piece is managed directly through our own backend/API/DB instead of Confluence:
+- **Partial fallback** — a single unparseable field (e.g. an unrecognized recording embed, or an inconsistently formatted freeform link) is entered/managed manually via our own API for just that session, while the rest keeps syncing normally.
+- **Full fallback** — if the integration isn't feasible at all (e.g. permissions, API limitations), past presentations and their resources are managed entirely through our own backend/admin API instead. Confluence is the preferred source of truth, not an assumed one — our own API/DB is the backstop.
