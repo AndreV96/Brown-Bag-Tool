@@ -310,6 +310,52 @@
   .tab-panel[hidden] {
     display: none;
   }
+  .doc-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+  }
+  .doc-card h2 {
+    font-size: 18px;
+    margin: 28px 0 10px;
+  }
+  .doc-card h2:first-child {
+    margin-top: 0;
+  }
+  .doc-card p {
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0 0 8px;
+  }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px 24px;
+  }
+  .meta-item .meta-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .meta-item .meta-value {
+    font-size: 15px;
+    line-height: 1.4;
+  }
+  .prep-steps {
+    margin: 0;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .prep-steps li strong {
+    color: var(--text);
+  }
   .past-panel {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -400,6 +446,7 @@
   <div class="tabs" role="tablist">
     <button class="tab-btn active" id="tabUpcoming" role="tab" aria-selected="true" data-tab="upcoming">Upcoming Sessions</button>
     <button class="tab-btn" id="tabPast" role="tab" aria-selected="false" data-tab="past">Past Presentations</button>
+    <button class="tab-btn" id="tabDocs" role="tab" aria-selected="false" data-tab="docs">Documentation</button>
   </div>
 
   <div class="tab-panel" id="upcomingPanel" role="tabpanel">
@@ -409,6 +456,47 @@
   <div class="tab-panel" id="pastPanel" role="tabpanel" hidden>
     <p class="section-subtitle">Browse recordings, transcripts, and resources shared from previous Brown Bags.</p>
     <div class="past-panel" id="pastList"></div>
+  </div>
+
+  <div class="tab-panel" id="docsPanel" role="tabpanel" hidden>
+    <div class="doc-card">
+      <h2>What is a Brown Bag?</h2>
+      <p>A Brown Bag is an informal, lunch-time session where someone on the team shares something they know — a technical deep dive, a lesson learned, a tool they've been using, or a topic they're simply curious about. The name comes from bringing your own lunch while you watch. It's a low-pressure way to spread knowledge across the team without requiring a big time investment or a polished production.</p>
+
+      <h2>Format &amp; Characteristics</h2>
+      <div class="meta-grid">
+        <div class="meta-item">
+          <div class="meta-label">Duration</div>
+          <div class="meta-value">45–60 minutes (30–45 min talk + 10–15 min Q&amp;A)</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Format</div>
+          <div class="meta-value">Live presentation with Q&amp;A — in-person, over Zoom, or hybrid</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Frequency</div>
+          <div class="meta-value">Roughly weekly, scheduled over the lunch hour</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Audience</div>
+          <div class="meta-value">Open to anyone in the org; attendance is optional</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Recording</div>
+          <div class="meta-value">Sessions are recorded when possible so people who can't attend live can catch up afterward</div>
+        </div>
+      </div>
+
+      <h2>How to Prepare</h2>
+      <ol class="prep-steps">
+        <li><strong>Pick a topic.</strong> Anything you know well or are excited to learn out loud about counts.</li>
+        <li><strong>Keep it informal.</strong> A few slides or a live demo is enough — it doesn't need to be a polished deck.</li>
+        <li><strong>Structure your time.</strong> A short intro, the main content, a live example if you have one, and a wrap-up.</li>
+        <li><strong>Leave room for questions.</strong> Aim to finish your material with 10–15 minutes to spare.</li>
+        <li><strong>Share your resources.</strong> Slides, repos, or docs you reference get added to the session's page afterward so others can revisit them.</li>
+        <li><strong>Test your setup.</strong> If presenting remotely, check your screen share and audio a few minutes before the session starts.</li>
+      </ol>
+    </div>
   </div>
     </main>
   </div>
@@ -529,18 +617,20 @@
     });
   }
 
+  const TABS = ["upcoming", "past", "docs"];
+
   function switchTab(tab) {
-    const isUpcoming = tab === "upcoming";
-    document.getElementById("tabUpcoming").classList.toggle("active", isUpcoming);
-    document.getElementById("tabUpcoming").setAttribute("aria-selected", String(isUpcoming));
-    document.getElementById("tabPast").classList.toggle("active", !isUpcoming);
-    document.getElementById("tabPast").setAttribute("aria-selected", String(!isUpcoming));
-    document.getElementById("upcomingPanel").hidden = !isUpcoming;
-    document.getElementById("pastPanel").hidden = isUpcoming;
+    TABS.forEach(t => {
+      const isActive = t === tab;
+      document.getElementById(`tab${t[0].toUpperCase()}${t.slice(1)}`).classList.toggle("active", isActive);
+      document.getElementById(`tab${t[0].toUpperCase()}${t.slice(1)}`).setAttribute("aria-selected", String(isActive));
+      document.getElementById(`${t}Panel`).hidden = !isActive;
+    });
   }
 
   document.getElementById("tabUpcoming").onclick = () => switchTab("upcoming");
   document.getElementById("tabPast").onclick = () => switchTab("past");
+  document.getElementById("tabDocs").onclick = () => switchTab("docs");
 
   document.querySelectorAll("[data-placeholder-nav]").forEach(btn => {
     btn.onclick = () => {
