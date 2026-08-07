@@ -274,23 +274,41 @@
     padding: 40px 0;
     font-size: 14px;
   }
-  .section-heading {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 40px 0 12px;
-  }
-  .section-heading h2 {
-    font-size: 18px;
-    margin: 0;
-  }
-  .section-heading:first-of-type {
-    margin-top: 0;
-  }
   .section-subtitle {
     margin: -6px 0 14px;
     font-size: 13px;
     color: var(--text-muted);
+  }
+  .tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin: 8px 0 20px;
+  }
+  .tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 10px 4px;
+    margin-right: 24px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+  }
+  .tab-btn:hover {
+    color: var(--text);
+  }
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .tab-panel[hidden] {
+    display: none;
   }
   .past-panel {
     background: var(--surface);
@@ -379,17 +397,19 @@
     <button class="btn-primary" id="openModalBtn">+ Schedule Presentation</button>
   </div>
 
-  <div class="section-heading">
-    <h2>Upcoming Sessions</h2>
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" id="tabUpcoming" role="tab" aria-selected="true" data-tab="upcoming">Upcoming Sessions</button>
+    <button class="tab-btn" id="tabPast" role="tab" aria-selected="false" data-tab="past">Past Presentations</button>
   </div>
-  <div class="session-list" id="sessionList"></div>
 
-  <div class="section-heading">
-    <h2>Past Presentations</h2>
-    <span class="badge-preview">Preview</span>
+  <div class="tab-panel" id="upcomingPanel" role="tabpanel">
+    <div class="session-list" id="sessionList"></div>
   </div>
-  <p class="section-subtitle">Browse recordings, transcripts, and resources shared from previous Brown Bags.</p>
-  <div class="past-panel" id="pastList"></div>
+
+  <div class="tab-panel" id="pastPanel" role="tabpanel" hidden>
+    <p class="section-subtitle">Browse recordings, transcripts, and resources shared from previous Brown Bags.</p>
+    <div class="past-panel" id="pastList"></div>
+  </div>
     </main>
   </div>
 </div>
@@ -508,6 +528,19 @@
       list.appendChild(row);
     });
   }
+
+  function switchTab(tab) {
+    const isUpcoming = tab === "upcoming";
+    document.getElementById("tabUpcoming").classList.toggle("active", isUpcoming);
+    document.getElementById("tabUpcoming").setAttribute("aria-selected", String(isUpcoming));
+    document.getElementById("tabPast").classList.toggle("active", !isUpcoming);
+    document.getElementById("tabPast").setAttribute("aria-selected", String(!isUpcoming));
+    document.getElementById("upcomingPanel").hidden = !isUpcoming;
+    document.getElementById("pastPanel").hidden = isUpcoming;
+  }
+
+  document.getElementById("tabUpcoming").onclick = () => switchTab("upcoming");
+  document.getElementById("tabPast").onclick = () => switchTab("past");
 
   document.querySelectorAll("[data-placeholder-nav]").forEach(btn => {
     btn.onclick = () => {
